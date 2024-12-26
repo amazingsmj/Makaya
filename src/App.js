@@ -24,6 +24,8 @@ import Logout from './pages/Logout';
 import LandingPage from './pages/Landing'; 
 import Login from './pages/Login';
 
+import Bureaux from './pages/Bureaux';
+
 const App = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(false); // Authentication state
 
@@ -45,6 +47,7 @@ const App = () => {
                         <Route path="/landing" element={<LandingPage />} />
                         <Route path="/login" element={<Login onLogin={handleLogin} />} /> {/* Pass handleLogin to Login */}
                         <Route path="/dashboard" element={isAuthenticated ? <Dashboard onLogout={handleLogout} /> : <Navigate to="/login" />} />
+                        <Route path="/bureaux" element={isAuthenticated ? <Bureaux /> : <Navigate to="/login" />} />
                         <Route path="/map" element={isAuthenticated ? <CameroonMap /> : <Navigate to="/login" />} />
                         <Route path="/help" element={isAuthenticated ? <Help /> : <Navigate to="/login" />} />
                         <Route path="/about" element={isAuthenticated ? <About /> : <Navigate to="/login" />} />

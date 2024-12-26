@@ -10,6 +10,9 @@ const SideMenu = () => {
                     <Link to="/dashboard">Dashboard</Link>
                 </li>
                 <li>
+                    <Link to="/bureaux">Bureaux</Link>
+                </li>
+                <li>
                     <Link to="/map">Map</Link>
                 </li>
                 <li>
