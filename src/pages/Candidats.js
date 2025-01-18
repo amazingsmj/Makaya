@@ -1,98 +1,118 @@
-import React from 'react';
-import { Avatar, Button, Space, Table, Typography, Row, Col, Modal, Form, Input, Select, Upload, message } from "antd";
+import React from "react";
+import {
+  Avatar,
+  Button,
+  Space,
+  Table,
+  Typography,
+  Row,
+  Col,
+  Modal,
+  Form,
+  Input,
+  Select,
+  Upload,
+  message,
+} from "antd";
 import { useEffect, useState } from "react";
 import { getCustomers } from "../API";
-import { UploadOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import {
+  UploadOutlined,
+  EditOutlined,
+  DeleteOutlined,
+} from "@ant-design/icons";
 
 function Candidats() {
-    const [loading, setLoading] = useState(false);
-    const [dataSource, setDataSource] = useState([]);
-    const [isModalVisible, setIsModalVisible] = useState(false);
-    const [isEditMode, setIsEditMode] = useState(false);
-    const [form] = Form.useForm();
-    const [editingRecord, setEditingRecord] = useState(null);
-    const [imagePreview, setImagePreview] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [dataSource, setDataSource] = useState([]);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [form] = Form.useForm();
+  const [editingRecord, setEditingRecord] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
 
-    useEffect(() => {
-        setLoading(true);
-        getCustomers().then((res) => {
-          setDataSource(res.users);
-          setLoading(false);
-        });
-      }, []);
-    
-      const handleAjouterCandidat = () => {
-        setIsEditMode(false);
-        setIsModalVisible(true);
-        form.resetFields();
-        setImagePreview(null);
-      };
-    
-      const handleModifier = (record) => {
-        setIsEditMode(true);
-        setEditingRecord(record);
-        setIsModalVisible(true);
-        form.setFieldsValue(record);
-        setImagePreview(record.image);
-      };
-    
-      const handleCancel = () => {
-        setIsModalVisible(false);
-        form.resetFields();
-        setEditingRecord(null);
-        setImagePreview(null);
-      };
-    
-      const handleSubmit = (values) => {
-        const newCandidate = {
-          key: isEditMode ? editingRecord.key : Date.now(),
-          ...values,
-          image: imagePreview || "https://via.placeholder.com/150",
-        };
-    
-        if (isEditMode) {
-          setDataSource((prevDataSource) =>
-            prevDataSource.map((candidate) =>
-              candidate.key === editingRecord.key ? newCandidate : candidate
-            )
-          );
-        } else {
-          setDataSource((prevDataSource) => [...prevDataSource, newCandidate]);
-        }
-    
-        setIsModalVisible(false);
-        form.resetFields();
-        setEditingRecord(null);
-        setImagePreview(null);
-      };
-    
-      const handleImageUpload = (file) => {
-        const isImage = file.type.startsWith("image/");
-        if (!isImage) {
-          message.error("Veuillez sélectionner un fichier image.");
-          return false;
-        }
-    
-        const isSizeValid = file.size / 1024 / 1024 < 2;
-        if (!isSizeValid) {
-          message.error("L'image doit être inférieure à 2 Mo.");
-          return false;
-        }
-    
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          setImagePreview(e.target.result);
-        };
-        reader.readAsDataURL(file);
-    
-        return false;
-      };
-    
-      const handleRetirer = (record) => {
-        setDataSource((prevDataSource) =>
-          prevDataSource.filter((candidate) => candidate.key !== record.key)
-        );
-      };
+  useEffect(() => {
+    setLoading(true);
+    getCustomers().then((res) => {
+      setDataSource(res.users);
+      setLoading(false);
+    });
+  }, []);
+
+  const handleAjouterCandidat = () => {
+    setIsEditMode(false);
+    setIsModalVisible(true);
+    form.resetFields();
+    setImagePreview(null);
+  };
+
+  const handleModifier = (record) => {
+    setIsEditMode(true);
+    setEditingRecord(record);
+    setIsModalVisible(true);
+    form.setFieldsValue(record);
+    setImagePreview(record.image);
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+    form.resetFields();
+    setEditingRecord(null);
+    setImagePreview(null);
+  };
+
+  const handleSubmit = (values) => {
+    const newCandidate = {
+      id: isEditMode ? editingRecord.id : Date.now(),
+      ...values,
+      image: imagePreview || "https://via.placeholder.com/150",
+    };
+
+    const prevDataSource = dataSource;
+    if (isEditMode) {
+      setDataSource(
+        prevDataSource.map((candidate) =>
+          candidate.id === editingRecord.id ? newCandidate : candidate
+        )
+      );
+    } else {
+      setDataSource([...prevDataSource, newCandidate]);
+    }
+
+    setIsModalVisible(false);
+    form.resetFields();
+    setEditingRecord(null);
+    setImagePreview(null);
+  };
+
+  const handleImageUpload = (file) => {
+    const isImage = file.type.startsWith("image/");
+    if (!isImage) {
+      message.error("Veuillez sélectionner un fichier image.");
+      return false;
+    }
+
+    const isSizeValid = file.size / 1024 / 1024 < 2;
+    if (!isSizeValid) {
+      message.error("L'image doit être inférieure à 2 Mo.");
+      return false;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setImagePreview(e.target.result);
+    };
+    reader.readAsDataURL(file);
+
+    return false;
+  };
+
+  const handleRetirer = (record) => {
+    const prevDataSource = dataSource;
+    setDataSource(
+      prevDataSource.filter((candidate) => candidate.id !== record.id)
+    );
+  };
 
   return (
     <div style={{ paddingLeft: "90px" }}>
@@ -109,6 +129,7 @@ function Candidats() {
         </Row>
 
         <Table
+          rowKey="id"
           loading={loading}
           columns={[
             {
@@ -140,8 +161,17 @@ function Candidats() {
               title: "Action",
               render: (_, record) => (
                 <Space size="middle">
-                  <Button type="link" icon={<EditOutlined />} onClick={() => handleModifier(record)} />
-                  <Button type="link" danger icon={<DeleteOutlined />} onClick={() => handleRetirer(record)} />
+                  <Button
+                    type="link"
+                    icon={<EditOutlined />}
+                    onClick={() => handleModifier(record)}
+                  />
+                  <Button
+                    type="link"
+                    danger
+                    icon={<DeleteOutlined />}
+                    onClick={() => handleRetirer(record)}
+                  />
                 </Space>
               ),
             },
@@ -152,7 +182,7 @@ function Candidats() {
 
         <Modal
           title={isEditMode ? "Modifier un Candidat" : "Ajouter un Candidat"}
-          visible={isModalVisible}
+          open={isModalVisible}
           onCancel={handleCancel}
           footer={null}
         >
@@ -222,7 +252,7 @@ function Candidats() {
         </Modal>
       </Space>
     </div>
-  )
+  );
 }
 
-export default Candidats
+export default Candidats;
