@@ -1,28 +1,28 @@
-import React, { useRef, useEffect, useState } from 'react';
-import { MapContainer, GeoJSON, useMap } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
+import React, { useRef, useEffect, useState } from "react";
+import { MapContainer, GeoJSON, useMap } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
 
 // Import GeoJSON data
-import cameroonGeoData from './Cam_GeoData.json';
-import arrondissementsData from './Arrondissements.json';
-import electionResults from './electionResults';
+import cameroonGeoData from "./Cam_GeoData.json";
+import arrondissementsData from "./Arrondissements.json";
+import electionResults from "./electionResults";
 
 // MapUpdater component to handle map view changes mapRef.current
 function MapUpdater({ bounds, zoom, center }) {
   const map = useMap();
-  
+
   useEffect(() => {
     if (bounds) {
       map.fitBounds(bounds, {
         padding: [50, 50],
-        maxZoom: zoom
+        maxZoom: zoom,
       });
     } else if (center) {
       map.setView(center, zoom);
     }
   }, [bounds, zoom, center, map]);
 
-  return null; // This component doesn't render anything 
+  return null; // This component doesn't render anything
 }
 
 const CameroonMap = () => {
@@ -30,16 +30,16 @@ const CameroonMap = () => {
   const [currentGeoData, setCurrentGeoData] = useState(cameroonGeoData);
   const [mapBounds, setMapBounds] = useState(null);
   const [mapCenter, setMapCenter] = useState([7.3697, 12.3547]);
-  const [mapZoom, setMapZoom] = useState(6);                     
+  const [mapZoom, setMapZoom] = useState(6);
   const [mapHistory, setMapHistory] = useState([]);
-  const [viewLevel, setViewLevel] = useState('country');
-  
+  const [viewLevel, setViewLevel] = useState("country");
+
   const mapRef = useRef(null);
 
   // Function to determine color based on election results
   const getColor = (region) => {
-    const result = electionResults.find(r => r.region === region);
-    return result ? result.winningPartyColor : '#FFFFFF'; // Couleur par défaut si aucune correspondance
+    const result = electionResults.find((r) => r.region === region);
+    return result ? result.winningPartyColor : "#FFFFFF"; // Couleur par défaut si aucune correspondance
   };
 
   // Style function for GeoJSON features
@@ -48,19 +48,40 @@ const CameroonMap = () => {
       fillColor: getColor(feature.properties.NAME_1), // Assurez-vous que le nom de la région est dans feature.properties.NAME_1
       weight: 2,
       opacity: 1,
-      color: 'white',
-      dashArray: '3',
-      fillOpacity: 0.7
+      color: "white",
+      dashArray: "3",
+      fillOpacity: 0.7,
     };
   };
 
   // Function to handle interactions with each feature
   const onEachFeature = (feature, layer) => {
     const regionName = feature.properties.NAME_1;
+    const departmentName = feature.properties.NAME_2;
+    const arrondissementName = feature.properties.NAME_3;
+
+    let displayName = null;
+    switch (viewLevel) {
+      case "country":
+        displayName = regionName;
+        break;
+      case "region":
+        displayName = departmentName;
+        break;
+      case "department":
+        displayName = arrondissementName;
+        break;
+      default:
+        displayName = null;
+        break;
+    }
 
     layer.bindTooltip(
-      `<strong>${regionName}</strong><br/>Parti gagnant: ${electionResults.find(r => r.region === regionName)?.winningParty || 'N/A'}`,
-      { permanent: false, direction: 'right' }
+      `<strong>${displayName}</strong><br/>Parti gagnant: ${
+        electionResults.find((r) => r.region === displayName)?.winningParty ||
+        "N/A"
+      }`,
+      { permanent: false, direction: "right" }
     );
 
     layer.on({
@@ -68,9 +89,9 @@ const CameroonMap = () => {
         const layer = e.target;
         layer.setStyle({
           weight: 3,
-          color: '#666',
-          dashArray: '',
-          fillOpacity: 0.7
+          color: "#666",
+          dashArray: "",
+          fillOpacity: 0.7,
         });
         layer.bringToFront();
       },
@@ -79,39 +100,51 @@ const CameroonMap = () => {
         layer.setStyle(style(feature));
       },
       click: async (e) => {
-        if (viewLevel === 'country') {
+        if (viewLevel === "country") {
           try {
-            const regionData = await import(`./Departements/${regionName}.json`);
-            updateMapState(regionData.default, e.target, 'region', 8);
+            const regionData = await import(
+              `./Departements/${regionName}.json`
+            );
+            updateMapState(regionData.default, e.target, "region", 8);
           } catch (error) {
             console.error(`Failed to load data for ${regionName}:`, error);
           }
-        } else if (viewLevel === 'region') {
+        } else if (viewLevel === "region") {
           const departmentData = arrondissementsData.features.filter(
-            f => f.properties.NAME_1 === regionName
+            (f) => f.properties.NAME_1 === regionName
           );
-          updateMapState({ type: "FeatureCollection", features: departmentData }, e.target, 'department', 10);
-        } else if (viewLevel === 'department') {
+          console.log(departmentData);
+
+          updateMapState(
+            { type: "FeatureCollection", features: departmentData },
+            e.target,
+            "department",
+            10
+          );
+        } else if (viewLevel === "department") {
           const arrondissementData = {
             type: "FeatureCollection",
-            features: [feature]
+            features: [feature],
           };
-          updateMapState(arrondissementData, e.target, 'arrondissement', 12);
+          updateMapState(arrondissementData, e.target, "arrondissement", 12);
         }
-      }
+      },
     });
   };
 
   // to update map state
   const updateMapState = (newData, layer, newViewLevel, newZoom) => {
     const currentCenter = mapRef.current.getCenter();
-    setMapHistory(prev => [...prev, { 
-      data: currentGeoData, 
-      zoom: mapZoom, 
-      viewLevel, 
-      bounds: mapBounds,
-      center: [currentCenter.lat, currentCenter.lng]
-    }]);
+    setMapHistory((prev) => [
+      ...prev,
+      {
+        data: currentGeoData,
+        zoom: mapZoom,
+        viewLevel,
+        bounds: mapBounds,
+        center: [currentCenter.lat, currentCenter.lng],
+      },
+    ]);
     setCurrentGeoData(newData);
     const bounds = layer.getBounds();
     setMapBounds(bounds);
@@ -125,7 +158,7 @@ const CameroonMap = () => {
     if (mapHistory.length > 0) {
       const previousState = mapHistory[mapHistory.length - 1];
       setCurrentGeoData(previousState.data);
-      setMapHistory(prev => prev.slice(0, -1));
+      setMapHistory((prev) => prev.slice(0, -1));
       setMapBounds(previousState.bounds);
       setMapCenter(previousState.center);
       setMapZoom(previousState.zoom);
@@ -134,18 +167,18 @@ const CameroonMap = () => {
   };
 
   return (
-    <div style={{ position: 'relative', height: '600px', width: '100%' }}>
+    <div style={{ position: "relative", height: "600px", width: "100%" }}>
       {mapHistory.length > 0 && (
         <button
           onClick={handleBack}
           style={{
-            position: 'absolute',
-            top: '10px',
-            left: '70px',
+            position: "absolute",
+            top: "10px",
+            left: "70px",
             zIndex: 1000,
-            padding: '10px',
-            fontSize: '16px',
-            cursor: 'pointer'
+            padding: "10px",
+            fontSize: "16px",
+            cursor: "pointer",
           }}
         >
           ← Back
@@ -155,12 +188,12 @@ const CameroonMap = () => {
         ref={mapRef}
         center={mapCenter}
         zoom={mapZoom}
-        style={{ height: '100%', width: '100%' }}
+        style={{ height: "100%", width: "100%" }}
         zoomControl={true}
       >
-        <GeoJSON 
+        <GeoJSON
           key={JSON.stringify(currentGeoData)}
-          data={currentGeoData} 
+          data={currentGeoData}
           style={style}
           onEachFeature={onEachFeature}
         />
