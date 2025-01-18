@@ -33,7 +33,7 @@ function Header() {
     <div style={headerStyle}>
       <Image width={40} src="./V4.jpg" />
       <Typography.Title>Election Mapping</Typography.Title>
-      <Space>
+      {/* <Space>
         <Badge count={comments.length} dot>
           <ExclamationCircleOutlined
             style={{ fontSize: 24 }}
@@ -85,7 +85,8 @@ function Header() {
             );
           }}
         />
-      </Drawer>
+      </Drawer> */}
+      <button>LogOut</button>
     </div>
   );
 }
