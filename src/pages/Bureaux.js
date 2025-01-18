@@ -1,17 +1,69 @@
 import React from 'react';
-import { Container, Typography, Box } from '@mui/material';
-
+import { Avatar, Rate, Space, Table, Typography } from "antd";
+import { useEffect, useState } from "react";
+import { getInventory } from "../API";
 
 
 const Bureaux = () => {
+    const [loading, setLoading] = useState(false);
+    const [dataSource, setDataSource] = useState([]);
+  
+    useEffect(() => {
+      setLoading(true);
+      getInventory().then((res) => {
+        setDataSource(res.products);
+        setLoading(false);
+      });
+    }, []);
+
     return(
-        <Container maxWidth="lg" style={{ position: 'relative', height: '100vh', width: '100%' }}>
-            <Box my={5}>
-            <Typography variant="h3" component="h2" align="center">Gestion des bureaux de vote</Typography>
-            <Typography component="h2" align="center">Election's Cameroon</Typography>
-            </Box>
-            
-        </Container>
+        <Space size={20} direction="vertical">
+      <Typography.Title level={4}>Bureaux de votes</Typography.Title>
+      <Table
+        loading={loading}
+        columns={[
+          {
+            title: "Bureau N°",
+            dataIndex: "thumbnail",
+            render: (link) => {
+              return <Avatar src={link} />;
+            },
+          },
+          {
+            title: "Nom",
+            dataIndex: "title",
+          },
+          {
+            title: "Centre de vote",
+            dataIndex: "price",
+            render: (value) => <span>${value}</span>,
+          },
+          {
+            title: "President du bureau",
+            dataIndex: "brand",
+          },
+          {
+            title: "Capcité Max",
+            dataIndex: "rating",
+            render: (rating) => {
+              return <Rate value={rating} allowHalf disabled />;
+            },
+          },
+          {
+            title: "inscrits",
+            dataIndex: "stock",
+          },
+          {
+            title: "Votes blancs",
+            dataIndex: "category",
+          },
+        ]}
+        dataSource={dataSource}
+        pagination={{
+          pageSize: 5,
+        }}
+      ></Table>
+    </Space>
     )
 };
 

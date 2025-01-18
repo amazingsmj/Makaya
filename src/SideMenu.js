@@ -1,44 +1,77 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import {
+  AppstoreOutlined,
+  BankOutlined,
+  TeamOutlined,
+  SolutionOutlined,
+  GlobalOutlined
+} from "@ant-design/icons";
+import { Menu } from "antd";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const SideMenu = () => {
-    return (
-        <div style={menuStyle}>
-            <h3>Menu</h3>
-            <ul style={listStyle}>
-                <li>
-                    <Link to="/dashboard">Dashboard</Link>
-                </li>
-                <li>
-                    <Link to="/bureaux">Bureaux</Link>
-                </li>
-                <li>
-                    <Link to="/map">Map</Link>
-                </li>
-                <li>
-                    <Link to="/help">Help</Link>
-                </li>
-                <li>
-                    <Link to="/about">About</Link>
-                </li>
-                <li>
-                    <Link to="/logout">Logout</Link>
-                </li>
-            </ul>
-        </div>
-    );
-};
+  const location = useLocation();
+  const [selectedKeys, setSelectedKeys] = useState("/");
 
-const menuStyle = {
+  useEffect(() => {
+    const pathName = location.pathname;
+    setSelectedKeys(pathName);
+  }, [location.pathname]);
+
+  const navigate = useNavigate();
+
+  // Objets de style
+  const sideMenuStyle = {
+    height: '100%',
+    backgroundColor: '#333',
+  };
+
+  const sideMenuVerticalStyle = {
+    height: '100%',
     width: '200px',
-    padding: '20px',
-    background: '#f4f4f4',
+    padding: '10px',
     borderRight: '1px solid #ccc',
-};
+  };
 
-const listStyle = {
-    listStyleType: 'none',
-    padding: 0,
+  return (
+    <div style={sideMenuStyle}>
+      <Menu
+        style={sideMenuVerticalStyle}
+        mode="vertical"
+        onClick={(item) => {
+          navigate(item.key);
+        }}
+        selectedKeys={[selectedKeys]}
+        items={[
+          {
+            label: "Dashboard",
+            icon: <AppstoreOutlined />,
+            key: "/dashboard",
+          },
+          {
+            label: "Bureaux de votes",
+            key: "/bureaux",
+            icon: <SolutionOutlined />,
+          },
+          {
+            label: "Centre de vote",
+            key: "/centre",
+            icon: <BankOutlined />,
+          },
+          {
+            label: "Candidats",
+            key: "/candidats",
+            icon: <TeamOutlined />,
+          },
+          {
+            label: "Map",
+            key: "/map",
+            icon: <GlobalOutlined />,
+          },
+        ]}
+      />
+    </div>
+  );
 };
 
 export default SideMenu;

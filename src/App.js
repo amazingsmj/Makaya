@@ -1,19 +1,4 @@
-// import './App.css';
-// import CameroonMap from './components/CameroonMap';
-
-// function App() {
-//   return (
-//     <div className="App">
-//       <div className="App">
-//         <CameroonMap />
-//       </div>
-//     </div>
-//   );
-// }
-
-// export default App;
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import SideMenu from './SideMenu';
 import Dashboard from './pages/Dashboard';
@@ -23,22 +8,33 @@ import About from './pages/About';
 import Logout from './pages/Logout';
 import LandingPage from './pages/Landing'; 
 import Login from './pages/Login';
-
+import Footer from './pages/Footer';
+import Header from './pages/Header';
 import Bureaux from './pages/Bureaux';
+import Centre from './pages/Centre';
+import Candidats from './pages/Candidats';
 
 const App = () => {
-    const [isAuthenticated, setIsAuthenticated] = useState(false); // Authentication state
+    // Lire l'état d'authentification depuis localStorage
+    const [isAuthenticated, setIsAuthenticated] = useState(() => {
+        const storedAuth = localStorage.getItem('isAuthenticated');
+        return storedAuth === 'true'; // Convertir la chaîne en booléen
+    });
 
     const handleLogin = () => {
-        setIsAuthenticated(true); // Set authentication state to true
+        setIsAuthenticated(true);
+        localStorage.setItem('isAuthenticated', 'true'); // Enregistrer l'état dans localStorage
     };
 
     const handleLogout = () => {
-        setIsAuthenticated(false); // Reset authentication state
+        setIsAuthenticated(false);
+        localStorage.removeItem('isAuthenticated'); // Supprimer l'état de localStorage
     };
 
     return (
-        <Router>
+        <div className="App">
+            <Router>
+            <Header />
             <div style={{ display: 'flex' }}>
                 {isAuthenticated && <SideMenu />} {/* Render SideMenu only if authenticated */}
                 <div style={{ padding: '20px', flex: 1 }}>
@@ -46,8 +42,10 @@ const App = () => {
                         <Route path="/" element={<Navigate to="/landing" />} />
                         <Route path="/landing" element={<LandingPage />} />
                         <Route path="/login" element={<Login onLogin={handleLogin} />} /> {/* Pass handleLogin to Login */}
-                        <Route path="/dashboard" element={isAuthenticated ? <Dashboard onLogout={handleLogout} /> : <Navigate to="/login" />} />
+                        <Route path="/dashboard" element={<Dashboard onLogout={handleLogout} />} /> {/* Accessible without authentication */}
                         <Route path="/bureaux" element={isAuthenticated ? <Bureaux /> : <Navigate to="/login" />} />
+                        <Route path="/centre" element={isAuthenticated ? <Centre /> : <Navigate to="/login" />} />
+                        <Route path="/candidats" element={isAuthenticated ? <Candidats /> : <Navigate to="/login" />} />
                         <Route path="/map" element={isAuthenticated ? <CameroonMap /> : <Navigate to="/login" />} />
                         <Route path="/help" element={isAuthenticated ? <Help /> : <Navigate to="/login" />} />
                         <Route path="/about" element={isAuthenticated ? <About /> : <Navigate to="/login" />} />
@@ -55,7 +53,9 @@ const App = () => {
                     </Routes>
                 </div>
             </div>
+            <Footer />
         </Router>
+        </div>
     );
 };
 
