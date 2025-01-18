@@ -13,6 +13,7 @@ import Header from './pages/Header';
 import Bureaux from './pages/Bureaux';
 import Centre from './pages/Centre';
 import Candidats from './pages/Candidats';
+import Map from './pages/Map';
 
 const App = () => {
     // Lire l'état d'authentification depuis localStorage
@@ -32,30 +33,75 @@ const App = () => {
     };
 
     return (
-        <div className="App">
-            <Router>
-            <Header />
-            <div style={{ display: 'flex' }}>
-                {isAuthenticated && <SideMenu />} {/* Render SideMenu only if authenticated */}
-                <div style={{ padding: '20px', flex: 1 }}>
-                    <Routes>
-                        <Route path="/" element={<Navigate to="/landing" />} />
-                        <Route path="/landing" element={<LandingPage />} />
-                        <Route path="/login" element={<Login onLogin={handleLogin} />} /> {/* Pass handleLogin to Login */}
-                        <Route path="/dashboard" element={<Dashboard onLogout={handleLogout} />} /> {/* Accessible without authentication */}
-                        <Route path="/bureaux" element={isAuthenticated ? <Bureaux /> : <Navigate to="/login" />} />
-                        <Route path="/centre" element={isAuthenticated ? <Centre /> : <Navigate to="/login" />} />
-                        <Route path="/candidats" element={isAuthenticated ? <Candidats /> : <Navigate to="/login" />} />
-                        <Route path="/map" element={isAuthenticated ? <CameroonMap /> : <Navigate to="/login" />} />
-                        <Route path="/help" element={isAuthenticated ? <Help /> : <Navigate to="/login" />} />
-                        <Route path="/about" element={isAuthenticated ? <About /> : <Navigate to="/login" />} />
-                        <Route path="/logout" element={isAuthenticated ? <Logout onLogout={handleLogout} /> : <Navigate to="/login" />} />
-                    </Routes>
-                </div>
+      <div className="App">
+        <Router>
+          <Header />
+          <div style={{ display: "flex" }}>
+            {isAuthenticated && <SideMenu />}{" "}
+            {/* Render SideMenu only if authenticated */}
+            <div style={{ padding: "20px", flex: 1 }}>
+              <Routes>
+                <Route path="/" element={<Navigate to="/map" />} />
+                <Route path="/landing" element={<LandingPage />} />
+                <Route
+                  path="/login"
+                  element={<Login onLogin={handleLogin} />}
+                />{" "}
+                {/* Pass handleLogin to Login */}
+                <Route
+                  path="/dashboard"
+                  element={<Dashboard onLogout={handleLogout} />}
+                />{" "}
+                {/* Accessible without authentication */}
+                <Route
+                  path="/bureaux"
+                  element={
+                    isAuthenticated ? <Bureaux /> : <Navigate to="/login" />
+                  }
+                />
+                <Route
+                  path="/centre"
+                  element={
+                    isAuthenticated ? <Centre /> : <Navigate to="/login" />
+                  }
+                />
+                <Route
+                  path="/candidats"
+                  element={
+                    isAuthenticated ? <Candidats /> : <Navigate to="/login" />
+                  }
+                />
+                <Route
+                  path="/map"
+                  element={isAuthenticated ? <Map /> : <Navigate to="/login" />}
+                />
+                <Route
+                  path="/help"
+                  element={
+                    isAuthenticated ? <Help /> : <Navigate to="/login" />
+                  }
+                />
+                <Route
+                  path="/about"
+                  element={
+                    isAuthenticated ? <About /> : <Navigate to="/login" />
+                  }
+                />
+                <Route
+                  path="/logout"
+                  element={
+                    isAuthenticated ? (
+                      <Logout onLogout={handleLogout} />
+                    ) : (
+                      <Navigate to="/login" />
+                    )
+                  }
+                />
+              </Routes>
             </div>
-            <Footer />
+          </div>
         </Router>
-        </div>
+      </div>
     );
 };
 

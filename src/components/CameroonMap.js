@@ -134,7 +134,7 @@ const CameroonMap = () => {
   };
 
   return (
-    <div style={{ position: 'relative', height: '100vh', width: '100%' }}>
+    <div style={{ position: 'relative', height: '600px', width: '100%' }}>
       {mapHistory.length > 0 && (
         <button
           onClick={handleBack}
