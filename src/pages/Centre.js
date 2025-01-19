@@ -56,6 +56,10 @@ function Centre() {
               title: "Inscrits",
               dataIndex: "total",
             },
+            {
+              title: "Nombre de bureaux de vote",
+              dataIndex: "quantity",
+            },
           ]}
           dataSource={dataSource}
           pagination={{

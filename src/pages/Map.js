@@ -4,6 +4,7 @@ import CameroonMap from "../components/CameroonMap";
 import { MdHeight } from "react-icons/md";
 import { Table } from "antd";
 import { getCustomers } from "../API";
+import SideMap from "./SideMap";
 
 function Map() {
   const [dataSource, setDataSource] = useState([]);
@@ -35,7 +36,18 @@ function Map() {
             },
             {
               title: "Couleur",
-              dataIndex: "discountedPrice",
+              dataIndex: "color",
+              render: (color) => (
+                <div
+                  style={{
+                    width: 30,
+                    height: 20,
+                    backgroundColor: color,
+                    borderRadius: "20%",
+                    border: "1px solid #000",
+                  }}
+                ></div>
+              ),
             },
           ]}
           loading={loading}

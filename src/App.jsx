@@ -12,7 +12,7 @@ import Bureaux from "./pages/Bureaux";
 import Centre from "./pages/Centre";
 import Candidats from "./pages/Candidats";
 import Map from "./pages/Map";
-import Basic from "./components/Button"; // Assurez-vous d'importer le composant Basic
+//import Basic from "./components/Button"; // Assurez-vous d'importer le composant Basic
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
@@ -33,12 +33,12 @@ const App = () => {
   return (
     <div className="App">
       <Router>
-        <Header />
+        <Header isAuthenticated={isAuthenticated} onLogout={handleLogout} />
         <div style={{ display: "flex" }}>
           {/* Afficher SideMenu uniquement si authentifié et pas sur la page de la carte */}
           {isAuthenticated && window.location.pathname !== "/map" && <SideMenu />}
           <div style={{ padding: "20px", flex: 1 }}>
-            <Basic onLogout={handleLogout} /> {/* Intégrer le composant Basic */}
+           {/*  <Basic onLogout={handleLogout} /> Intégrer le composant Basic */}
             <Routes>
               <Route path="/" element={<Navigate to="/map" />} />
               <Route path="/map" element={<Map />} /> {/* Accessible à tous */}

@@ -154,8 +154,31 @@ function Candidats() {
               dataIndex: "party",
             },
             {
+              title: "Couleur",
+              dataIndex: "color",
+              render: (color) => (
+                <div
+                  style={{
+                    width: 30,
+                    height: 20,
+                    backgroundColor: color,
+                    borderRadius: "20%",
+                    border: "1px solid #000",
+                  }}
+                ></div>
+              ),
+            },
+            {
               title: "Programme Électoral",
-              dataIndex: "address",
+              dataIndex: "programUrl",
+              render: (link) =>
+                link ? (
+                  <Button type="link" href={link} target="_blank" download>
+                    Télécharger
+                  </Button>
+                ) : (
+                  "Aucun programme"
+                ),
             },
             {
               title: "Action",
@@ -221,10 +244,45 @@ function Candidats() {
             </Form.Item>
             <Form.Item
               label="Programme Électoral"
-              name="address"
-              rules={[{ required: true, message: "Veuillez entrer l'adresse" }]}
+              name="programUrl"
+              rules={[{ required: true, message: "Veuillez charger le programme électoral" }]}
             >
-              <Input />
+              <Upload
+                beforeUpload={(file) => {
+                  // Valider le type de fichier (par exemple, PDF)
+                  const isPdf = file.type === "application/pdf";
+                  if (!isPdf) {
+                    message.error("Seuls les fichiers PDF sont acceptés !");
+                    return false;
+                  }
+
+                  // Lire le fichier et le stocker comme URL
+                  const reader = new FileReader();
+                  reader.onload = (e) => {
+                    form.setFieldsValue({ programUrl: e.target.result }); // Enregistrer l'URL dans le formulaire
+                  };
+                  reader.readAsDataURL(file);
+                  return false; // Empêcher le téléchargement par défaut
+                }}
+                showUploadList={false}
+              >
+                <Button icon={<UploadOutlined />}>Charger le fichier</Button>
+              </Upload>
+              {form.getFieldValue("programUrl") && (
+                <div style={{ marginTop: 10 }}>
+                  <Button type="link" href={form.getFieldValue("programUrl")} target="_blank">
+                    Voir le programme actuel
+                  </Button>
+                </div>
+              )}
+            </Form.Item>
+
+            <Form.Item
+              label="Couleur"
+              name="color"
+              rules={[{ required: true, message: "Veuillez choisir une couleur" }]}
+            >
+              <Input type="color" />
             </Form.Item>
             <Form.Item label="Photo">
               <Upload

@@ -19,15 +19,15 @@ function Basic({ onLogout }) { // Passer une fonction pour gérer la déconnexio
   return (
     <Dropdown>
       <Dropdown.Toggle variant="success" id="dropdown-basic">
-        Menu Connexion
+        Log
       </Dropdown.Toggle>
 
       <Dropdown.Menu>
         <Dropdown.Item onClick={() => handleNavigation("/login")}>
-          Connexion
+          LogIn
         </Dropdown.Item>
         <Dropdown.Item onClick={handleLogout}>
-          Déconnexion
+          LogOut
         </Dropdown.Item>
       </Dropdown.Menu>
     </Dropdown>
