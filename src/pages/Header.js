@@ -1,25 +1,14 @@
 import React from 'react';
-import { BellFilled, ExclamationCircleOutlined } from "@ant-design/icons";
-import { Badge, Drawer, Image, List, Space, Typography } from "antd";
-import { useEffect, useState } from "react";
-import { getComments, getOrders } from "../API";
+import { Image, Typography } from "antd";
+import Basic from "../components/Button";
 
-function Header() {
-  const [comments, setComments] = useState([]);
-  const [orders, setOrders] = useState([]);
-  const [commentsOpen, setCommentsOpen] = useState(false);
-  const [notificationsOpen, setNotificationsOpen] = useState(false);
+interface HeaderProps {
+  isAuthenticated: boolean;
+  onLogout: () => void;
+}
 
-  useEffect(() => {
-    getComments().then((res) => {
-      setComments(res.comments);
-    });
-    getOrders().then((res) => {
-      setOrders(res.products);
-    });
-  }, []);
-
-  // Objet de style
+const Header: React.FC<HeaderProps> = ({ isAuthenticated, onLogout }) => {
+  // Style pour le header
   const headerStyle = {
     height: '50px',
     display: 'flex',
@@ -32,63 +21,13 @@ function Header() {
   return (
     <div style={headerStyle}>
       <Image width={40} src="./V4.jpg" />
-      <Typography.Title>Election Mapping</Typography.Title>
-      {/* <Space>
-        <Badge count={comments.length} dot>
-          <ExclamationCircleOutlined
-            style={{ fontSize: 24 }}
-            onClick={() => {
-              setCommentsOpen(true);
-            }}
-          />
-        </Badge>
-        <Badge count={orders.length}>
-          <BellFilled
-            style={{ fontSize: 24 }}
-            onClick={() => {
-              setNotificationsOpen(true);
-            }}
-          />
-        </Badge>
-      </Space>
-      <Drawer
-        title="Comments"
-        open={commentsOpen}
-        onClose={() => {
-          setCommentsOpen(false);
-        }}
-        maskClosable
-      >
-        <List
-          dataSource={comments}
-          renderItem={(item) => {
-            return <List.Item>{item.body}</List.Item>;
-          }}
-        />
-      </Drawer>
-      <Drawer
-        title="Notifications"
-        open={notificationsOpen}
-        onClose={() => {
-          setNotificationsOpen(false);
-        }}
-        maskClosable
-      >
-        <List
-          dataSource={orders}
-          renderItem={(item) => {
-            return (
-              <List.Item>
-                <Typography.Text strong>{item.title}</Typography.Text> has been
-                ordered!
-              </List.Item>
-            );
-          }}
-        />
-      </Drawer> */}
-      <button>LogOut</button>
+      <Typography.Title level={3} style={{ margin: 0 }}>
+        Election Mapping
+      </Typography.Title>
+      {/* Bouton menu dropdown */}
+      {isAuthenticated && <Basic onLogout={onLogout} />}
     </div>
   );
-}
+};
 
 export default Header;
